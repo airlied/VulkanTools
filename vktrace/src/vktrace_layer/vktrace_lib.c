@@ -24,6 +24,7 @@
 #include "vktrace_interconnect.h"
 #include "vktrace_vk_vk.h"
 
+bool vktrace_pdb_mode;
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -132,7 +133,7 @@ VKTRACER_ENTRY _Load(void)
     // only do the hooking and networking if the tracer is NOT loaded by vktrace
     if (vktrace_is_loaded_into_vktrace() == FALSE)
     {
-        char *verbosity;
+        char *verbosity, *pdb_mode;
         vktrace_LogSetCallback(loggingCallback);
         verbosity = vktrace_layer_getenv("_VK_TRACE_VERBOSITY");
         if (verbosity && !strcmp(verbosity, "quiet"))
@@ -151,6 +152,10 @@ VKTRACER_ENTRY _Load(void)
 
         vktrace_layer_free_getenv(verbosity);
 
+	pdb_mode = vktrace_layer_getenv("_VK_TRACE_PDB_MODE");
+	if (pdb_mode)
+	    vktrace_pdb_mode = true;
+	vktrace_layer_free_getenv(pdb_mode);
         vktrace_LogVerbose("vktrace_lib library loaded into PID %d", vktrace_get_pid());
         atexit(TrapExit);
 

@@ -225,7 +225,7 @@ class Subcommand(object):
         init_tracer.append('    pPacket = interpret_body_as_vkApiVersion(pHeader);')
         init_tracer.append('    pPacket->version = VK_MAKE_VERSION(1, 0, VK_HEADER_VERSION);')
         init_tracer.append('    vktrace_set_packet_entrypoint_end_time(pHeader);')
-        init_tracer.append('    FINISH_TRACE_PACKET();\n}\n')
+        init_tracer.append('    FINISH_TRACE_PACKET(true);\n}\n')
 
         init_tracer.append('extern VKTRACE_CRITICAL_SECTION g_memInfoLock;')
 
@@ -503,6 +503,14 @@ class Subcommand(object):
                                          'GetPhysicalDeviceWin32PresentationSupportKHR',
                                          'CreateAndroidSurfaceKHR',
                                          ]
+        auto_pdb_mode_funcs = ['CreateDescriptorSetLayout',
+                               'DestroyDescriptorSetLayout',
+                               'CreatePipelineLayout',
+                               'DestroyPipelineLayout',
+                               'CreateShaderModule',
+                               'DestroyShaderModule'
+                               'DestroyPipelineCache'
+                               ]
 
         # validate the manually_written_hooked_funcs list
         protoFuncs = [proto.name for proto in self.protos]
@@ -582,7 +590,10 @@ class Subcommand(object):
                             if ('DeviceCreateInfo' not in proto.params[pp_dict['index']].ty):
                                 func_body.append('    %s;' % (pp_dict['finalize_txt']))
                         # All buffers should be finalized by now, and the trace packet can be finished (which sends it over the socket)
-                        func_body.append('    FINISH_TRACE_PACKET();')
+                        if proto.name in auto_pdb_mode_funcs:
+                            func_body.append('    FINISH_TRACE_PACKET(false);')
+                        else:
+                            func_body.append('    FINISH_TRACE_PACKET(true);')
                         if proto.name == "DestroyInstance":
                             func_body.append('    g_instanceDataMap.erase(key);')
                         elif proto.name == "DestroyDevice":
@@ -2197,9 +2208,11 @@ class VktracePacketID(Subcommand):
         header_txt.append('//#define SEND_ENTRYPOINT_PARAMS(entrypoint, ...) vktrace_TraceInfo(entrypoint, __VA_ARGS__);\n')
         header_txt.append('#define CREATE_TRACE_PACKET(entrypoint, buffer_bytes_needed) \\')
         header_txt.append('    pHeader = vktrace_create_trace_packet(VKTRACE_TID_VULKAN, VKTRACE_TPI_VK_##entrypoint, sizeof(packet_##entrypoint), buffer_bytes_needed);\n')
-        header_txt.append('#define FINISH_TRACE_PACKET() \\')
-        header_txt.append('    vktrace_finalize_trace_packet(pHeader); \\')
-        header_txt.append('    vktrace_write_trace_packet(pHeader, vktrace_trace_get_trace_file()); \\')
+        header_txt.append('#define FINISH_TRACE_PACKET(trace_only) \\')
+        header_txt.append('        vktrace_finalize_trace_packet(pHeader); \\')
+        header_txt.append('    if ((trace_only && !vktrace_pdb_mode) || (!trace_only && vktrace_pdb_mode)) { \\')
+        header_txt.append('        vktrace_write_trace_packet(pHeader, vktrace_trace_get_trace_file()); \\')
+        header_txt.append('    } \\')
         header_txt.append('    vktrace_delete_trace_packet(&pHeader);')
         return "\n".join(header_txt)
 

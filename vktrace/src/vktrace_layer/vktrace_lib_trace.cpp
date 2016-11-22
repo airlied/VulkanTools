@@ -158,7 +158,7 @@ VKTRACER_EXPORT VKAPI_ATTR VkResult VKAPI_CALL __HOOKED_vkAllocateMemory(
     vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pAllocateInfo));
     vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pAllocator));
     vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pMemory));
-    FINISH_TRACE_PACKET();
+    FINISH_TRACE_PACKET(true);
     // begin custom code
     add_new_handle_to_mem_info(*pMemory, pAllocateInfo->allocationSize, NULL);
     // end custom code
@@ -206,7 +206,7 @@ VKTRACER_EXPORT VKAPI_ATTR VkResult VKAPI_CALL __HOOKED_vkMapMemory(
         add_data_to_mem_info(memory, size, offset, *ppData);
     }
     pPacket->result = result;
-    FINISH_TRACE_PACKET();
+    FINISH_TRACE_PACKET(true);
     return result;
 }
 
@@ -254,7 +254,7 @@ VKTRACER_EXPORT VKAPI_ATTR void VKAPI_CALL __HOOKED_vkUnmapMemory(
     vktrace_set_packet_entrypoint_end_time(pHeader);
     pPacket->device = device;
     pPacket->memory = memory;
-    FINISH_TRACE_PACKET();
+    FINISH_TRACE_PACKET(true);
 #ifdef USE_PAGEGUARD_SPEEDUP
     pageguardEnter();
     if (PageGuardMappedData != nullptr)
@@ -280,7 +280,7 @@ VKTRACER_EXPORT VKAPI_ATTR void VKAPI_CALL __HOOKED_vkFreeMemory(
     pPacket->memory = memory;
     vktrace_add_buffer_to_trace_packet(pHeader, (void**)&(pPacket->pAllocator), sizeof(VkAllocationCallbacks), NULL);
     vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pAllocator));
-    FINISH_TRACE_PACKET();
+    FINISH_TRACE_PACKET(true);
     // begin custom code
     rm_handle_from_mem_info(memory);
     // end custom code
@@ -359,7 +359,7 @@ VKTRACER_EXPORT VKAPI_ATTR VkResult VKAPI_CALL __HOOKED_vkInvalidateMappedMemory
     pPacket->device = device;
     pPacket->memoryRangeCount = memoryRangeCount;
     pPacket->result = result;
-    FINISH_TRACE_PACKET();
+    FINISH_TRACE_PACKET(true);
     return result;
 }
 
@@ -461,7 +461,7 @@ VKTRACER_EXPORT VKAPI_ATTR VkResult VKAPI_CALL __HOOKED_vkFlushMappedMemoryRange
     pPacket->device = device;
     pPacket->memoryRangeCount = memoryRangeCount;
     pPacket->result = result;
-    FINISH_TRACE_PACKET();
+    FINISH_TRACE_PACKET(true);
 #ifdef USE_PAGEGUARD_SPEEDUP
     pageguardExit();
 #endif
@@ -486,7 +486,7 @@ VKTRACER_EXPORT VKAPI_ATTR VkResult VKAPI_CALL __HOOKED_vkAllocateCommandBuffers
     pPacket->result = result;
     vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pAllocateInfo));
     vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pCommandBuffers));
-    FINISH_TRACE_PACKET();
+    FINISH_TRACE_PACKET(true);
     return result;
 }
 
@@ -507,7 +507,7 @@ VKTRACER_EXPORT VKAPI_ATTR VkResult VKAPI_CALL __HOOKED_vkBeginCommandBuffer(
     pPacket->result = result;
     vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pBeginInfo->pInheritanceInfo));
     vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pBeginInfo));
-    FINISH_TRACE_PACKET();
+    FINISH_TRACE_PACKET(true);
     return result;
 }
 
@@ -536,7 +536,7 @@ VKTRACER_EXPORT VKAPI_ATTR VkResult VKAPI_CALL __HOOKED_vkCreateDescriptorPool(
     vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pCreateInfo));
     vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pAllocator));
     vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pDescriptorPool));
-    FINISH_TRACE_PACKET();
+    FINISH_TRACE_PACKET(true);
     return result;
 }
 
@@ -609,7 +609,7 @@ VKTRACER_EXPORT VKAPI_ATTR VkResult VKAPI_CALL __HOOKED_vkCreateDevice(
     pPacket->result = result;
     vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pAllocator));
     vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pDevice));
-    FINISH_TRACE_PACKET();
+    FINISH_TRACE_PACKET(false);
     return result;
 }
 
@@ -639,7 +639,7 @@ VKTRACER_EXPORT VKAPI_ATTR VkResult VKAPI_CALL __HOOKED_vkCreateFramebuffer(
     vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pCreateInfo));
     vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pAllocator));
     vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pFramebuffer));
-    FINISH_TRACE_PACKET();
+    FINISH_TRACE_PACKET(true);
     return result;
 }
 
@@ -743,7 +743,7 @@ VKTRACER_EXPORT VKAPI_ATTR VkResult VKAPI_CALL __HOOKED_vkCreateInstance(
     pPacket->result = result;
     vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pAllocator));
     vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pInstance));
-    FINISH_TRACE_PACKET();
+    FINISH_TRACE_PACKET(false);
 
     if (localCreateInfo.enabledLayerCount > 0)
         free((void *)localCreateInfo.ppEnabledLayerNames);
@@ -767,7 +767,7 @@ VKTRACER_EXPORT VKAPI_ATTR void VKAPI_CALL __HOOKED_vkDestroyInstance(
     pPacket->instance = instance;
     vktrace_add_buffer_to_trace_packet(pHeader, (void**)&(pPacket->pAllocator), sizeof(VkAllocationCallbacks), NULL);
     vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pAllocator));
-    FINISH_TRACE_PACKET();
+    FINISH_TRACE_PACKET(false);
     g_instanceDataMap.erase(key);
 #if defined(USE_PAGEGUARD_SPEEDUP) && !defined(PAGEGUARD_MEMCPY_USE_PPL_LIB)
 	vktrace_pageguard_done_multi_threads_memcpy();
@@ -822,7 +822,7 @@ VKTRACER_EXPORT VKAPI_ATTR VkResult VKAPI_CALL __HOOKED_vkCreateRenderPass(
     vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pCreateInfo));
     vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pAllocator));
     vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pRenderPass));
-    FINISH_TRACE_PACKET();
+    FINISH_TRACE_PACKET(false);
     return result;
 }
 
@@ -861,7 +861,7 @@ VKTRACER_EXPORT VKAPI_ATTR VkResult VKAPI_CALL __HOOKED_vkEnumerateDeviceExtensi
     vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pLayerName));
     vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pPropertyCount));
     vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pProperties));
-    FINISH_TRACE_PACKET();
+    FINISH_TRACE_PACKET(false);
     return result;
 }
 
@@ -890,7 +890,7 @@ VKTRACER_EXPORT VKAPI_ATTR VkResult VKAPI_CALL __HOOKED_vkEnumerateDeviceLayerPr
     pPacket->result = result;
     vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pPropertyCount));
     vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pProperties));
-    FINISH_TRACE_PACKET();
+    FINISH_TRACE_PACKET(false);
     return result;
 }
 // TODO : This should be pretty easy to fit into codegen. Don't need to make the call prior to creating packet
@@ -918,7 +918,7 @@ VKTRACER_EXPORT VKAPI_ATTR void VKAPI_CALL __HOOKED_vkGetPhysicalDeviceQueueFami
     vktrace_add_buffer_to_trace_packet(pHeader, (void**)&(pPacket->pQueueFamilyProperties), *pQueueFamilyPropertyCount * sizeof(VkQueueFamilyProperties), pQueueFamilyProperties);
     vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pQueueFamilyPropertyCount));
     vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pQueueFamilyProperties));
-    FINISH_TRACE_PACKET();
+    FINISH_TRACE_PACKET(false);
 }
 
 VKTRACER_EXPORT VKAPI_ATTR VkResult VKAPI_CALL __HOOKED_vkEnumeratePhysicalDevices(
@@ -948,7 +948,7 @@ VKTRACER_EXPORT VKAPI_ATTR VkResult VKAPI_CALL __HOOKED_vkEnumeratePhysicalDevic
     pPacket->result = result;
     vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pPhysicalDeviceCount));
     vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pPhysicalDevices));
-    FINISH_TRACE_PACKET();
+    FINISH_TRACE_PACKET(false);
     return result;
 }
 
@@ -986,7 +986,7 @@ VKTRACER_EXPORT VKAPI_ATTR VkResult VKAPI_CALL __HOOKED_vkGetQueryPoolResults(
     vktrace_add_buffer_to_trace_packet(pHeader, (void**)&(pPacket->pData), dataSize, pData);
     pPacket->result = result;
     vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pData));
-    FINISH_TRACE_PACKET();
+    FINISH_TRACE_PACKET(true);
     return result;
 }
 
@@ -1018,7 +1018,7 @@ VKTRACER_EXPORT VKAPI_ATTR VkResult VKAPI_CALL __HOOKED_vkAllocateDescriptorSets
     vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pAllocateInfo->pSetLayouts));
     vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pDescriptorSets));
     vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pAllocateInfo));
-    FINISH_TRACE_PACKET();
+    FINISH_TRACE_PACKET(true);
     return result;
 }
 
@@ -1108,7 +1108,7 @@ VKTRACER_EXPORT VKAPI_ATTR void VKAPI_CALL __HOOKED_vkUpdateDescriptorSets(
     vktrace_add_buffer_to_trace_packet(pHeader, (void**)&(pPacket->pDescriptorCopies), descriptorCopyCount * sizeof(VkCopyDescriptorSet), pDescriptorCopies);
     vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pDescriptorCopies));
     // end custom code
-    FINISH_TRACE_PACKET();
+    FINISH_TRACE_PACKET(true);
 }
 
 VKTRACER_EXPORT VKAPI_ATTR VkResult VKAPI_CALL __HOOKED_vkQueueSubmit(
@@ -1151,7 +1151,7 @@ VKTRACER_EXPORT VKAPI_ATTR VkResult VKAPI_CALL __HOOKED_vkQueueSubmit(
         vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pSubmits[i].pWaitDstStageMask));
     }
     vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pSubmits));
-    FINISH_TRACE_PACKET();
+    FINISH_TRACE_PACKET(true);
     return result;
 }
 
@@ -1216,7 +1216,7 @@ VKTRACER_EXPORT VKAPI_ATTR VkResult VKAPI_CALL __HOOKED_vkQueueBindSparse(
         vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pBindInfo[i].pSignalSemaphores));
     }
     vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pBindInfo));
-    FINISH_TRACE_PACKET();
+    FINISH_TRACE_PACKET(true);
     return result;
 }
 
@@ -1262,7 +1262,7 @@ VKTRACER_EXPORT VKAPI_ATTR void VKAPI_CALL __HOOKED_vkCmdWaitEvents(
     vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pMemoryBarriers));
     vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pBufferMemoryBarriers));
     vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pImageMemoryBarriers));
-    FINISH_TRACE_PACKET();
+    FINISH_TRACE_PACKET(true);
 }
 
 VKTRACER_EXPORT VKAPI_ATTR void VKAPI_CALL __HOOKED_vkCmdPipelineBarrier(
@@ -1301,7 +1301,7 @@ VKTRACER_EXPORT VKAPI_ATTR void VKAPI_CALL __HOOKED_vkCmdPipelineBarrier(
     vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pMemoryBarriers));
     vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pBufferMemoryBarriers));
     vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pImageMemoryBarriers));
-    FINISH_TRACE_PACKET();
+    FINISH_TRACE_PACKET(true);
 }
 
 VKTRACER_EXPORT VKAPI_ATTR void VKAPI_CALL __HOOKED_vkCmdPushConstants(
@@ -1325,7 +1325,7 @@ VKTRACER_EXPORT VKAPI_ATTR void VKAPI_CALL __HOOKED_vkCmdPushConstants(
     pPacket->size = size;
     vktrace_add_buffer_to_trace_packet(pHeader, (void**)&(pPacket->pValues), size, pValues);
     vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pValues));
-    FINISH_TRACE_PACKET();
+    FINISH_TRACE_PACKET(true);
 }
 
 VKTRACER_EXPORT VKAPI_ATTR VkResult VKAPI_CALL __HOOKED_vkGetPipelineCacheData(
@@ -1357,7 +1357,7 @@ VKTRACER_EXPORT VKAPI_ATTR VkResult VKAPI_CALL __HOOKED_vkGetPipelineCacheData(
     pPacket->result = result;
     vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pDataSize));
     vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pData));
-    FINISH_TRACE_PACKET();
+    FINISH_TRACE_PACKET(true);
     return result;
 }
 
@@ -1392,7 +1392,7 @@ VKTRACER_EXPORT VKAPI_ATTR VkResult VKAPI_CALL __HOOKED_vkCreateGraphicsPipeline
     vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pCreateInfos));
     vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pAllocator));
     vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pPipelines));
-    FINISH_TRACE_PACKET();
+    FINISH_TRACE_PACKET(false);
     return result;
 }
 
@@ -1457,7 +1457,7 @@ VKTRACER_EXPORT VKAPI_ATTR VkResult VKAPI_CALL __HOOKED_vkCreateComputePipelines
     vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pCreateInfos));
     vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pAllocator));
     vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pPipelines));
-    FINISH_TRACE_PACKET();
+    FINISH_TRACE_PACKET(false);
     return result;
 }
 
@@ -1485,7 +1485,7 @@ VKTRACER_EXPORT VKAPI_ATTR VkResult VKAPI_CALL __HOOKED_vkCreatePipelineCache(
     vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pCreateInfo));
     vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pAllocator));
     vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pPipelineCache));
-    FINISH_TRACE_PACKET();
+    FINISH_TRACE_PACKET(false);
     return result;
 }
 
@@ -1507,7 +1507,7 @@ VKTRACER_EXPORT VKAPI_ATTR void VKAPI_CALL __HOOKED_vkCmdBeginRenderPass(
     vktrace_add_buffer_to_trace_packet(pHeader, (void**)&(pPacket->pRenderPassBegin->pClearValues), clearValueSize, pRenderPassBegin->pClearValues);
     vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pRenderPassBegin->pClearValues));
     vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pRenderPassBegin));
-    FINISH_TRACE_PACKET();
+    FINISH_TRACE_PACKET(true);
 }
 
 VKTRACER_EXPORT VKAPI_ATTR VkResult VKAPI_CALL __HOOKED_vkFreeDescriptorSets(
@@ -1529,7 +1529,7 @@ VKTRACER_EXPORT VKAPI_ATTR VkResult VKAPI_CALL __HOOKED_vkFreeDescriptorSets(
     vktrace_add_buffer_to_trace_packet(pHeader, (void**)&(pPacket->pDescriptorSets), descriptorSetCount*sizeof(VkDescriptorSet), pDescriptorSets);
     pPacket->result = result;
     vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pDescriptorSets));
-    FINISH_TRACE_PACKET();
+    FINISH_TRACE_PACKET(true);
     return result;
 }
 
@@ -1549,7 +1549,7 @@ VKTRACER_EXPORT VKAPI_ATTR VkResult VKAPI_CALL __HOOKED_vkGetPhysicalDeviceSurfa
     vktrace_add_buffer_to_trace_packet(pHeader, (void**)&(pPacket->pSurfaceCapabilities), sizeof(VkSurfaceCapabilitiesKHR), pSurfaceCapabilities);
     pPacket->result = result;
     vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pSurfaceCapabilities));
-    FINISH_TRACE_PACKET();
+    FINISH_TRACE_PACKET(true);
     return result;
 }
 
@@ -1582,7 +1582,7 @@ VKTRACER_EXPORT VKAPI_ATTR VkResult VKAPI_CALL __HOOKED_vkGetPhysicalDeviceSurfa
     pPacket->result = result;
     vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pSurfaceFormatCount));
     vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pSurfaceFormats));
-    FINISH_TRACE_PACKET();
+    FINISH_TRACE_PACKET(true);
     return result;
 }
 
@@ -1615,7 +1615,7 @@ VKTRACER_EXPORT VKAPI_ATTR VkResult VKAPI_CALL __HOOKED_vkGetPhysicalDeviceSurfa
     pPacket->result = result;
     vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pPresentModeCount));
     vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pPresentModes));
-    FINISH_TRACE_PACKET();
+    FINISH_TRACE_PACKET(true);
     return result;
 }
 
@@ -1641,7 +1641,7 @@ VKTRACER_EXPORT VKAPI_ATTR VkResult VKAPI_CALL __HOOKED_vkCreateSwapchainKHR(
     vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pCreateInfo->pQueueFamilyIndices));
     vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pCreateInfo));
     vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pSwapchain));
-    FINISH_TRACE_PACKET();
+    FINISH_TRACE_PACKET(true);
     return result;
 }
 
@@ -1674,7 +1674,7 @@ VKTRACER_EXPORT VKAPI_ATTR VkResult VKAPI_CALL __HOOKED_vkGetSwapchainImagesKHR(
     pPacket->result = result;
     vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pSwapchainImageCount));
     vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pSwapchainImages));
-    FINISH_TRACE_PACKET();
+    FINISH_TRACE_PACKET(true);
     return result;
 }
 
@@ -1713,7 +1713,7 @@ VKTRACER_EXPORT VKAPI_ATTR VkResult VKAPI_CALL __HOOKED_vkQueuePresentKHR(
         vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pPresentInfo->pResults));
     }
     vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pPresentInfo));
-    FINISH_TRACE_PACKET();
+    FINISH_TRACE_PACKET(true);
     return result;
 }
 
@@ -1740,7 +1740,7 @@ VKTRACER_EXPORT VKAPI_ATTR VkResult VKAPI_CALL __HOOKED_vkCreateWin32SurfaceKHR(
     vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pCreateInfo));
     vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pAllocator));
     vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pSurface));
-    FINISH_TRACE_PACKET();
+    FINISH_TRACE_PACKET(true);
     return result;
 }
 
@@ -1757,7 +1757,7 @@ VKTRACER_EXPORT VKAPI_ATTR VkBool32 VKAPI_CALL __HOOKED_vkGetPhysicalDeviceWin32
     pPacket->physicalDevice = physicalDevice;
     pPacket->queueFamilyIndex = queueFamilyIndex;
     pPacket->result = result;
-    FINISH_TRACE_PACKET();
+    FINISH_TRACE_PACKET(true);
     return result;
 }
 #endif
@@ -1783,7 +1783,7 @@ VKTRACER_EXPORT VKAPI_ATTR VkResult VKAPI_CALL __HOOKED_vkCreateXcbSurfaceKHR(
     vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pCreateInfo));
     vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pAllocator));
     vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pSurface));
-    FINISH_TRACE_PACKET();
+    FINISH_TRACE_PACKET(true);
     return result;
 }
 
@@ -1805,7 +1805,7 @@ VKTRACER_EXPORT VKAPI_ATTR VkBool32 VKAPI_CALL __HOOKED_vkGetPhysicalDeviceXcbPr
     pPacket->queueFamilyIndex = queueFamilyIndex;
     pPacket->visual_id = visual_id;
     pPacket->result = result;
-    FINISH_TRACE_PACKET();
+    FINISH_TRACE_PACKET(true);
     return result;
 }
 #endif
@@ -1831,7 +1831,7 @@ VKTRACER_EXPORT VKAPI_ATTR VkResult VKAPI_CALL __HOOKED_vkCreateXlibSurfaceKHR(
     vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pCreateInfo));
     vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pAllocator));
     vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pSurface));
-    FINISH_TRACE_PACKET();
+    FINISH_TRACE_PACKET(true);
     return result;
 }
 
@@ -1853,7 +1853,7 @@ VKTRACER_EXPORT VKAPI_ATTR VkBool32 VKAPI_CALL __HOOKED_vkGetPhysicalDeviceXlibP
     pPacket->queueFamilyIndex = queueFamilyIndex;
     pPacket->visualID = visualID;
     pPacket->result = result;
-    FINISH_TRACE_PACKET();
+    FINISH_TRACE_PACKET(true);
     return result;
 }
 #endif
@@ -1879,7 +1879,7 @@ VKTRACER_EXPORT VKAPI_ATTR VkResult VKAPI_CALL __HOOKED_vkCreateAndroidSurfaceKH
     vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pCreateInfo));
     vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pAllocator));
     vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pSurface));
-    FINISH_TRACE_PACKET();
+    FINISH_TRACE_PACKET(true);
     return result;
 }
 #endif
@@ -1907,7 +1907,7 @@ VKTRACER_EXPORT VKAPI_ATTR VkResult VKAPI_CALL __HOOKED_vkGetPhysicalDeviceSurfa
     pPacket->result = result;
     vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pSurfaceDescription));
     vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pSupported));
-    FINISH_TRACE_PACKET();
+    FINISH_TRACE_PACKET(true);
     return result;
 }
 */
@@ -2220,7 +2220,7 @@ VKTRACER_EXPORT VKAPI_ATTR PFN_vkVoidFunction VKAPI_CALL vktraceGetDeviceProcAdd
     vktrace_add_buffer_to_trace_packet(pHeader, (void**)&(pPacket->pName), ((funcName != NULL) ? ROUNDUP_TO_4(strlen(funcName) + 1) : 0), funcName);
     pPacket->result = addr;
     vktrace_finalize_buffer_address(pHeader, (void**)&(pPacket->pName));
-    FINISH_TRACE_PACKET();
+    FINISH_TRACE_PACKET(false);
     return addr;
 }
 
@@ -2286,7 +2286,7 @@ VKTRACER_EXPORT VKAPI_ATTR PFN_vkVoidFunction VKAPI_CALL vktraceGetInstanceProcA
     vktrace_add_buffer_to_trace_packet(pHeader, (void**) &(pPacket->pName), ((funcName != NULL) ? ROUNDUP_TO_4(strlen(funcName) + 1) : 0), funcName);
     pPacket->result = addr;
     vktrace_finalize_buffer_address(pHeader, (void**) &(pPacket->pName));
-    FINISH_TRACE_PACKET();
+    FINISH_TRACE_PACKET(false);
     return addr;
 }
 
